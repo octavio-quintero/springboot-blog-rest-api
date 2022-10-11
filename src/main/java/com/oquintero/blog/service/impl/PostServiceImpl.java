@@ -3,9 +3,13 @@ package com.oquintero.blog.service.impl;
 import com.oquintero.blog.entity.Post;
 import com.oquintero.blog.exception.ResourceNotFoundException;
 import com.oquintero.blog.payload.PostDto;
+import com.oquintero.blog.payload.PostResponse;
 import com.oquintero.blog.repository.PostRepository;
 import com.oquintero.blog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,10 +35,25 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        List<PostDto> postDtos = posts.stream().map( post -> mapToDTO(post)).collect(Collectors.toList());
-        return postDtos;
+    public PostResponse getAllPosts(int pageNo, int pageSize) {
+
+        //create a Pageable instance for pagination
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Post> pageOfPosts = postRepository.findAll(pageable);
+
+        //get content for page object
+        List<Post> posts = pageOfPosts.getContent();
+
+        List<PostDto> content = posts.stream().map( post -> mapToDTO(post)).collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(content);
+        postResponse.setPageNo(pageOfPosts.getNumber());
+        postResponse.setPageSize(pageOfPosts.getSize());
+        postResponse.setTotalElements(pageOfPosts.getTotalElements());
+        postResponse.setTotalPages(pageOfPosts.getTotalPages());
+        postResponse.setLast(pageOfPosts.isLast());
+        return postResponse;
     }
 
     @Override

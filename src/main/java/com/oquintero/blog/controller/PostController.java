@@ -3,6 +3,7 @@ package com.oquintero.blog.controller;
 import com.oquintero.blog.payload.PostDto;
 import com.oquintero.blog.payload.PostResponse;
 import com.oquintero.blog.service.PostService;
+import com.oquintero.blog.utils.constants.PaginationConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,10 @@ public class PostController {
     //get all posts rest api
     @GetMapping
     public PostResponse getAllPosts(
-            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = "id",  required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir
+            @RequestParam(value = "pageNo", defaultValue = PaginationConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = PaginationConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = PaginationConstants.DEFAULT_SORT_BY,  required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = PaginationConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
     ){
         return postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
     }

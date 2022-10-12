@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,10 +36,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse getAllPosts(int pageNo, int pageSize) {
+    public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
+
+        //create sort object with direction
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
 
         //create a Pageable instance for pagination
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Post> pageOfPosts = postRepository.findAll(pageable);
 
         //get content for page object
@@ -46,6 +51,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostDto> content = posts.stream().map( post -> mapToDTO(post)).collect(Collectors.toList());
 
+        //create response object with all details of pagination
         PostResponse postResponse = new PostResponse();
         postResponse.setContent(content);
         postResponse.setPageNo(pageOfPosts.getNumber());
@@ -53,6 +59,7 @@ public class PostServiceImpl implements PostService {
         postResponse.setTotalElements(pageOfPosts.getTotalElements());
         postResponse.setTotalPages(pageOfPosts.getTotalPages());
         postResponse.setLast(pageOfPosts.isLast());
+
         return postResponse;
     }
 

@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -30,4 +32,10 @@ public class Post {
 
     @Column(name = "content", nullable = false)
     private String content;
+
+    //The orphanRemoval = true is used to delete all records that has references with the
+    //records we are trying to delete in the table of current entity.
+    //In this case will delete all comments related to the post we are deleting.
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comments = new HashSet<>();
 }

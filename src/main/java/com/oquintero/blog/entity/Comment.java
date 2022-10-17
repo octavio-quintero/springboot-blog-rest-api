@@ -19,7 +19,7 @@ public class Comment {
     private long id;
     private String name;
     private String email;
-    private String content;
+    private String body;
 
     //The FetchType.LAZY tells to Hibernate to only fetch the related entities
     //from database when you use the relationship

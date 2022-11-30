@@ -7,6 +7,7 @@ import com.oquintero.blog.utils.constants.PaginationConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ public class PostController {
     private PostService postService;
 
     //create a blog post rest api
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto post){
         return new ResponseEntity<>(postService.createPost(post), HttpStatus.CREATED);
@@ -43,12 +45,14 @@ public class PostController {
     }
 
     //update post rest api
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("{id}")
     public ResponseEntity<PostDto> updatePost(@PathVariable("id") long id, @Valid @RequestBody PostDto postDto){
         PostDto postResponse = postService.updatePost(id, postDto);
         return ResponseEntity.ok(postResponse);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deletePost(@PathVariable("id") long id){
         postService.deletePost(id);

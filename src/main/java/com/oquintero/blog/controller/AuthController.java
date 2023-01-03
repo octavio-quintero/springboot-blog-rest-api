@@ -2,10 +2,12 @@ package com.oquintero.blog.controller;
 
 import com.oquintero.blog.entity.Role;
 import com.oquintero.blog.entity.User;
+import com.oquintero.blog.payload.JWTAuthResponseDTO;
 import com.oquintero.blog.payload.LoginDto;
 import com.oquintero.blog.payload.SignUpDto;
 import com.oquintero.blog.repository.RoleRepository;
 import com.oquintero.blog.repository.UserRepository;
+import com.oquintero.blog.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +39,19 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @PostMapping("/signin")
-    public ResponseEntity<String> authenticateUser( @RequestBody LoginDto loginDto){
+    public ResponseEntity<JWTAuthResponseDTO> authenticateUser( @RequestBody LoginDto loginDto){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                                             loginDto.getUsernameOrEmail(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return ResponseEntity.ok("User signed-in successfully");
+
+        //get token from token provider
+        String token = jwtTokenProvider.generateToken(authentication);
+
+        return ResponseEntity.ok(new JWTAuthResponseDTO(token));
     }
 
     @PostMapping("/signup")
